@@ -1,6 +1,6 @@
 package service
 
-import{
+import {
 	"https://github.com/dgrijalva/jwt-go"
 }
 type JWTService interface {

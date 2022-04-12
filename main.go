@@ -10,7 +10,7 @@ import (
 
 func main() {
 	var loginService service.LoginService = service.StaticLoginService()
-	var jwtService service.JWTService = Service.JWTAuthService()
+	var jwtService service.JWTService = service.JWTAuthService()
 	var loginController controller.LoginController = controller.LoginHandler(loginService, jwtService)
 
 	server := gin.New()
