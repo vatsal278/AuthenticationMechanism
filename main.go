@@ -24,6 +24,5 @@ func main() {
 			ctx.JSON(http.StatusUnauthorized, nil)
 		}
 	})
-
-	server.Run(":8080")
+	server.Run(":9090")
 }
