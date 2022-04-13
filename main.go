@@ -13,6 +13,7 @@ func main() {
 	var jwtService service.JWTService = service.JWTAuthService()
 	var loginController controller.LoginController = controller.LoginHandler(loginService, jwtService)
 
+	gin.SetMode(gin.ReleaseMode)
 	server := gin.New()
 	server.POST("/login", func(ctx *gin.Context) {
 		token := loginController.Login(ctx)
@@ -24,5 +25,5 @@ func main() {
 			ctx.JSON(http.StatusUnauthorized, nil)
 		}
 	})
-	server.Run(":9090")
+	server.Run(":8080")
 }
