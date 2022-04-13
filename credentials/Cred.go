@@ -1,6 +1,6 @@
-package Cred
+package Credentials
 
-type LoginCredentials struct{
-	Email string 'form:"email"'
-	Password string 'form:"password"'
+type LoginCredentials struct {
+	Email    string `form:"email"`
+	Password string `form:"password"`
 }

@@ -1,27 +1,71 @@
 package service
 
-import {
-	"https://github.com/dgrijalva/jwt-go"
-}
+import (
+	"fmt"
+	"os"
+	"time"
+
+	"github.com/dgrijalva/jwt-go"
+)
+
 type JWTService interface {
 	GenerateToken(emai string, isUser bool) string
 	ValidateToken(token string) (*jwt.Token, error)
 }
 
 type authCustomClaims struct {
-	Name string 'jsonname'
-	User bool  'json' : "user"
+	Name string `json:"name"`
+	User bool   `json:"user"`
 	jwt.StandardClaims
 }
 
 type jwtService struct {
-	secretkey string
-	issure string
+	secretKey string
+	issure    string
 }
 
-func JWTAuthService() JWTService{
+func JWTAuthService() JWTService {
 	return &jwtService{
-		secretkey: getSecretKey(),
-		issure: "vatsal"
+		secretKey: getSecretKey(),
+		issure:    "vatsal",
 	}
+}
+
+func getSecretKey() string {
+	secret := os.Getenv("JWT_SECRET")
+	if secret == "" {
+		secret = "secret"
+	}
+	return secret
+}
+
+func (service *jwtService) GenerateToken(email string, isUser bool) string {
+	claims := &authCustomClaims{
+		email,
+		isUser,
+		jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Hour * 48).Unix(),
+			Issuer:    service.issure,
+			IssuedAt:  time.Now().Unix(),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	//encoded string
+	t, err := token.SignedString([]byte(service.secretKey))
+	if err != nil {
+		panic(err)
+	}
+	return t
+}
+
+func (service *jwtService) ValidateToken(encodedToken string) (*jwt.Token, error) {
+	return jwt.Parse(encodedToken, func(token *jwt.Token) (interface{}, error) {
+		if _, isvalid := token.Method.(*jwt.SigningMethodHMAC); !isvalid {
+			return nil, fmt.Errorf("Invalid token", token.Header["alg"])
+
+		}
+		return []byte(service.secretKey), nil
+	})
+
 }

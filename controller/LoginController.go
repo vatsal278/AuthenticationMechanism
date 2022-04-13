@@ -1,9 +1,10 @@
 package controller
 
-import(
-	"github.com/gin-gonic/gin"
-	"user_auth/credentials"
+import (
+	"user_auth/Credentials"
 	"user_auth/service"
+
+	"github.com/gin-gonic/gin"
 )
 
 type LoginController interface {
@@ -12,18 +13,18 @@ type LoginController interface {
 
 type loginController struct {
 	loginService service.LoginService
-	jwtService service.JWTService
+	jwtService   service.JWTService
 }
 
 func LoginHandler(loginService service.LoginService, jwtService service.JWTService) LoginController {
-	return &loginController {
-		loginService : loginService
-		jwtService : jwtService
+	return &loginController{
+		loginService: loginService,
+		jwtService:   jwtService,
 	}
 }
 
 func (controller *loginController) Login(ctx *gin.Context) string {
-	var credential credentials.LoginCredentials
+	var credential Credentials.LoginCredentials
 	err := ctx.ShouldBind(&credential)
 	if err != nil {
 		return "no data found"
@@ -31,7 +32,7 @@ func (controller *loginController) Login(ctx *gin.Context) string {
 
 	isUserAuthenticated := controller.loginService.LogInUser(credential.Email, credential.Password)
 	if isUserAuthenticated {
-		return controller.jwtService.GenerateToken(credential.Email, true )
+		return controller.jwtService.GenerateToken(credential.Email, true)
 	}
 	return ""
 }

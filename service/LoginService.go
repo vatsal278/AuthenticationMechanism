@@ -1,22 +1,21 @@
 package service
 
 type LoginService interface {
-	LogInUser(email string, password string)bool
+	LogInUser(email string, password string) bool
 }
 
 type LoginInformation struct {
-	email string
+	email    string
 	password string
 }
 
-func StaticLoginService() LoginService{
+func StaticLoginService() LoginService {
 	return &LoginInformation{
-		email : "vatsal@gmail.com"
-		password: "vatsal1" ,
+		email:    "vatsal@gmail.com",
+		password: "vatsal1",
 	}
 }
 
-func(info *LoginInformation) LogInUser(email string, password string) bool{
+func (info *LoginInformation) LogInUser(email string, password string) bool {
 	return info.email == email && info.password == password
 }
-
