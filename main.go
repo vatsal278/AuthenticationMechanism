@@ -1,22 +1,25 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 	"user_auth/controller"
+	"user_auth/middleware"
 	"user_auth/service"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	var loginService service.LoginService = service.StaticLoginService()
-	var jwtService service.JWTService = service.JWTAuthService()
-	var loginController controller.LoginController = controller.LoginHandler(loginService, jwtService)
+	var loginService = service.StaticLoginService()
+	var jwtService = service.JWTAuthService()
+	var loginController = controller.LoginHandler(loginService, jwtService)
 
-	gin.SetMode(gin.ReleaseMode)
-	server := gin.New()
+	server := gin.Default()
 	server.POST("/login", func(ctx *gin.Context) {
 		token := loginController.Login(ctx)
+		fmt.Print(token)
 		if token != "" {
 			ctx.JSON(http.StatusOK, gin.H{
 				"token": token,
@@ -25,5 +28,10 @@ func main() {
 			ctx.JSON(http.StatusUnauthorized, nil)
 		}
 	})
-	server.Run(":8080")
+	server.Use(middleware.AuthorizeJWT())
+	server.GET("get", func(ctx *gin.Context) {
+
+		_ = loginController.EmployeeList(ctx)
+	})
+	log.Fatal(server.Run(":8080"))
 }

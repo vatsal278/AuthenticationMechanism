@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"user_auth/Credentials"
 	"user_auth/service"
 
@@ -9,7 +10,16 @@ import (
 
 type LoginController interface {
 	Login(ctx *gin.Context) string
+	EmployeeList(ctx *gin.Context) string
 }
+
+type Employee struct {
+	Id   string `form:"id" json:"id"`
+	Name string `form:"name" json:"name"`
+	City string `form:"city" json:"city"`
+}
+
+var employee Employee = Employee{"100", "vatsal", "jaipur"}
 
 type loginController struct {
 	loginService service.LoginService
@@ -29,10 +39,15 @@ func (controller *loginController) Login(ctx *gin.Context) string {
 	if err != nil {
 		return "no data found"
 	}
-
+	fmt.Print(credential)
 	isUserAuthenticated := controller.loginService.LogInUser(credential.Email, credential.Password)
 	if isUserAuthenticated {
 		return controller.jwtService.GenerateToken(credential.Email, true)
 	}
+	return ""
+}
+
+func (controller *loginController) EmployeeList(ctx *gin.Context) string {
+	fmt.Printf("%s", employee)
 	return ""
 }
