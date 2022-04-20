@@ -28,10 +28,15 @@ func main() {
 			ctx.JSON(http.StatusUnauthorized, nil)
 		}
 	})
+	server.GET("/ping", func(ctx *gin.Context) {
+		ctx.String(200, "pong")
+	})
+
 	server.Use(middleware.AuthorizeJWT())
-	server.GET("get", func(ctx *gin.Context) {
+	server.GET("/get", func(ctx *gin.Context) {
 
 		_ = loginController.EmployeeList(ctx)
 	})
+
 	log.Fatal(server.Run(":8080"))
 }
