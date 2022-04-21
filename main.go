@@ -17,6 +17,9 @@ func main() {
 	var loginController = controller.LoginHandler(loginService, jwtService)
 
 	server := gin.Default()
+	server.POST("/signup", func(ctx *gin.Context) {
+		loginController.Signup(ctx)
+	})
 	server.POST("/login", func(ctx *gin.Context) {
 		token := loginController.Login(ctx)
 		fmt.Print(token)
