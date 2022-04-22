@@ -29,14 +29,19 @@ func AuthorizeJWT() gin.HandlerFunc {
 
 		token, err := service.JWTAuthService().ValidateToken(strings.Trim(newHeader[1], " "))
 		if err != nil {
+			if strings.Contains(err.Error(), "Token is expired") {
+				c.AbortWithStatus(http.StatusUnauthorized)
+			} else {
+				c.AbortWithStatus(http.StatusInternalServerError)
+			}
 			log.Print(err, "compared literals are not same")
-			c.AbortWithStatus(http.StatusInternalServerError)
+
 			return
 		}
 
 		if token.Valid {
 			claims := token.Claims.(jwt.MapClaims)
-			fmt.Println((claims))
+			log.Print((claims["iss"]))
 		} else {
 			fmt.Println(err)
 			c.AbortWithStatus(http.StatusUnauthorized)

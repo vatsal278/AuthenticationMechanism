@@ -11,6 +11,7 @@ import (
 type JWTService interface {
 	GenerateToken(emai string, isUser bool) string
 	ValidateToken(token string) (*jwt.Token, error)
+	DecodeToken(token string) (jwt.MapClaims, error)
 }
 
 type authCustomClaims struct {
@@ -44,7 +45,7 @@ func (service *jwtService) GenerateToken(email string, isUser bool) string {
 		email,
 		isUser,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * 48).Unix(),
+			ExpiresAt: time.Now().Add(time.Hour * 100000).Unix(),
 			Issuer:    service.issure,
 			IssuedAt:  time.Now().Unix(),
 		},
@@ -68,4 +69,15 @@ func (service *jwtService) ValidateToken(encodedToken string) (*jwt.Token, error
 		return []byte(service.secretKey), nil
 	})
 
+}
+
+func (service *jwtService) DecodeToken(encodedToken string) (jwt.MapClaims, error) {
+	token, err := jwt.Parse(encodedToken, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return token, nil
+	})
+	claims := token.Claims.(jwt.MapClaims)
+	return claims, err
 }

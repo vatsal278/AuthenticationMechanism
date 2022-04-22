@@ -11,8 +11,8 @@ type LoginInformation struct {
 
 func StaticLoginService() LoginService {
 	return &LoginInformation{
-		email:    "vatsal@gmail.com",
-		password: "vatsal1",
+		email:    "",
+		password: "",
 	}
 }
 

@@ -2,6 +2,8 @@ package controller
 
 import (
 	"fmt"
+	"log"
+	"strings"
 	"user_auth/Credentials"
 	"user_auth/helpers"
 	"user_auth/models"
@@ -21,8 +23,6 @@ type Employee struct {
 	Name string `form:"name" json:"name"`
 	City string `form:"city" json:"city"`
 }
-
-var employee Employee = Employee{"100", "vatsal", "jaipur"}
 
 type loginController struct {
 	loginService service.LoginService
@@ -78,7 +78,16 @@ func (controller *loginController) Login(ctx *gin.Context) string {
 
 func (controller *loginController) EmployeeList(ctx *gin.Context) string {
 	// todo only loggedin user should get their name and email in the response
-	fmt.Printf("%s", employee)
+
+	authHeader := ctx.GetHeader("Authorization")
+	newHeader := strings.Split(authHeader, " ")
+	newHeader[0] = strings.Trim(newHeader[1], " ")
+	claims, err := controller.jwtService.DecodeToken(newHeader[0])
+	if err != nil {
+		log.Print("Decode Unsuccessfull")
+	}
+
+	log.Printf("You are logged in as %s, Hope API is working Fine", claims["name"])
 	return ""
 }
 
