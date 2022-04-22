@@ -77,6 +77,7 @@ func (controller *loginController) Login(ctx *gin.Context) string {
 }
 
 func (controller *loginController) EmployeeList(ctx *gin.Context) string {
+	// todo only loggedin user should get their name and email in the response
 	fmt.Printf("%s", employee)
 	return ""
 }
