@@ -3,7 +3,6 @@ package controller
 import (
 	"fmt"
 	"log"
-	"strings"
 	"user_auth/Credentials"
 	"user_auth/helpers"
 	"user_auth/models"
@@ -77,17 +76,19 @@ func (controller *loginController) Login(ctx *gin.Context) string {
 }
 
 func (controller *loginController) EmployeeList(ctx *gin.Context) string {
-	// todo only loggedin user should get their name and email in the response
 
-	authHeader := ctx.GetHeader("Authorization")
-	newHeader := strings.Split(authHeader, " ")
-	newHeader[0] = strings.Trim(newHeader[1], " ")
-	claims, err := controller.jwtService.DecodeToken(newHeader[0])
+	loggeduser, exist := ctx.Get("email")
+	user, err := userModel.GetUserByEmail(fmt.Sprint(loggeduser))
 	if err != nil {
-		log.Print("Decode Unsuccessfull")
+		log.Print("cant fetch user from db")
 	}
 
-	log.Printf("You are logged in as %s, Hope API is working Fine", claims["name"])
+	if !exist {
+		log.Print("cannot pass variable accross middleware")
+	}
+	ctx.JSON(200, user)
+
+	log.Printf("You are logged in as %s, Hope API is working Fine", user.Name)
 	return ""
 }
 

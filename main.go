@@ -39,6 +39,8 @@ func main() {
 	server.GET("/get", func(ctx *gin.Context) {
 
 		_ = loginController.EmployeeList(ctx)
+	}, func(ctx *gin.Context) {
+		_ = middleware.AuthorizeJWT()
 	})
 
 	log.Fatal(server.Run(":8080"))
