@@ -86,7 +86,13 @@ func (controller *loginController) EmployeeList(ctx *gin.Context) string {
 	if !exist {
 		log.Print("cannot pass variable accross middleware")
 	}
-	ctx.JSON(200, user)
+	var usercredential struct {
+		Name  string `json:"name"`
+		Email string `json:"email"`
+	}
+	usercredential.Name = user.Name
+	usercredential.Email = user.Email
+	ctx.JSON(200, usercredential)
 
 	log.Printf("You are logged in as %s, Hope API is working Fine", user.Name)
 	return ""
