@@ -32,7 +32,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /main .
 # Start a new stage from scratch
 FROM scratch
 
-EXPOSE 9090
+EXPOSE 8080
 
 # Copy the Pre-built binary file
 COPY --from=builder /main .
