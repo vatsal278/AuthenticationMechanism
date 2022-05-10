@@ -1,12 +1,12 @@
 package models
 
 import (
-	"os"
 	"user_auth/db"
 )
 
-var server = os.Getenv("DATABASE")
+var server = ":9002"
 
+// var server = os.Getenv("DATABASE")
 // Database name
 var databaseName = "users"
 

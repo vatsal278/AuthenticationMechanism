@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -25,7 +26,7 @@ func NewConnection(host string, dbName string) (conn *DBConnection) {
 		Username: os.Getenv("DB_USER"),
 		Password: os.Getenv("DB_PWD"),
 	}
-
+	fmt.Printf("%+v\n", *info)
 	session, err := mgo.DialWithInfo(info)
 
 	if err != nil {
