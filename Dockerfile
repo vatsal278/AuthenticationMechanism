@@ -4,6 +4,9 @@ FROM golang:alpine as builder
 # Enable go modules
 ENV GO111MODULE=on
 
+# Install git. (alpine image does not have git in it)
+RUN apk update && apk add --no-cache git
+
 # Set current working directory
 WORKDIR /app
 
@@ -22,7 +25,7 @@ RUN go mod download
 # It is also a common best practise.
 
 # Build the application.
-RUN go build -o main .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /main .
 
 
 # Finally our multi-stage to build a small image
@@ -32,7 +35,7 @@ FROM scratch
 EXPOSE 8080
 
 # Copy the Pre-built binary file
-COPY --from=builder main .
+COPY --from=builder /main .
 
 # Run executable
-CMD ["main"]
+CMD ["/main"]
