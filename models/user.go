@@ -20,7 +20,8 @@ type UserModel struct{}
 // Signup handles registering a user
 func (u *UserModel) Signup(cred Credentials.SignUpCredentials) error {
 	// Connect to the user collection
-	collection := dbConnect.Use(databaseName, "user")
+	dbconnect := dbConnect()
+	collection := dbconnect.Use(databaseName, "user")
 	// Assign result to error object while saving user
 	err := collection.Insert(bson.M{
 		"name":     cred.Name,
@@ -34,7 +35,8 @@ func (u *UserModel) Signup(cred Credentials.SignUpCredentials) error {
 // GetUserByEmail handles fetching user by email
 func (u *UserModel) GetUserByEmail(email string) (user User, err error) {
 	// Connect to the user collection
-	collection := dbConnect.Use(databaseName, "user")
+	dbconnect := dbConnect()
+	collection := dbconnect.Use(databaseName, "user")
 	// Assign result to error object while saving user
 	err = collection.Find(bson.M{"email": email}).One(&user)
 	return user, err

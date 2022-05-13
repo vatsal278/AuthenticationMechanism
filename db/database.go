@@ -48,5 +48,4 @@ func (conn *DBConnection) Use(dbName, tableName string) (collection *mgo.Collect
 func (conn *DBConnection) Close() {
 	// This closes the connection
 	conn.session.Close()
-	return
 }

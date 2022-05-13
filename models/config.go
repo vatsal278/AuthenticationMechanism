@@ -6,9 +6,9 @@ import (
 )
 
 var server = os.Getenv("DBADDRESS")
-
-// Database name
 var databaseName = os.Getenv("DBNAME")
 
-// Create a connection
-var dbConnect = db.NewConnection(server, databaseName)
+func dbConnect() *db.DBConnection {
+	param := db.NewConnection(server, databaseName)
+	return param
+}
