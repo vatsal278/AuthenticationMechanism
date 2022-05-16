@@ -8,7 +8,7 @@ import (
 var server = os.Getenv("DBADDRESS")
 var databaseName = os.Getenv("DBNAME")
 
-func dbConnect() *db.DBConnection {
+func dbConnect() *db.session {
 	param := db.NewConnection(server, databaseName)
 	return param
 }
