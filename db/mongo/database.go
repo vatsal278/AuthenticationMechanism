@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"time"
+	dbinterface "user_auth/db"
 
 	"gopkg.in/mgo.v2"
 )
@@ -39,7 +40,7 @@ func NewConnection(host string, dbName string) (conn *session) {
 		panic(err)
 	}
 
-	sess.SetMode(mgo.Monotonic, true)
+	sess.SetMode(mgo.Strong, true)
 	conn = &session{sess}
 	return conn
 }
