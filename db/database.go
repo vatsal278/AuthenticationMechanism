@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 	"time"
-	dbinterface "user_auth/db"
+	"user_auth/models"
 
 	"gopkg.in/mgo.v2"
 )
@@ -14,14 +14,21 @@ type session struct {
 	session *mgo.Session
 }
 
-func NewDB() dbinterface.IDB {
-	return &session{
-		session: models.dbConnect(),
+func NewDB() models.IUserModel {
+	return &models.UserModel{
+		Db: dbConnect().DB(os.Getenv("DBNAME")),
 	}
 }
 
+func dbConnect() *mgo.Session {
+	var server = os.Getenv("DBADDRESS")
+	var databaseName = os.Getenv("DBNAME")
+	param := NewConnection(server, databaseName)
+	return param
+}
+
 // NewConnection handles connecting to a mongo database
-func NewConnection(host string, dbName string) (conn *session) {
+func NewConnection(host string, dbName string) (sess *mgo.Session) {
 	info := &mgo.DialInfo{
 		// Address if its a local db then the value host=localhost
 		Addrs: []string{host},
@@ -41,8 +48,8 @@ func NewConnection(host string, dbName string) (conn *session) {
 	}
 
 	sess.SetMode(mgo.Strong, true)
-	conn = &session{sess}
-	return conn
+
+	return sess
 }
 
 // Use handles connect to a certain collection
