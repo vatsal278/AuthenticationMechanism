@@ -29,14 +29,9 @@ type LoginController struct {
 	Db           models.IUserModel
 }
 
-func NewController(dbi models.IUserModel) ILoginController {
+func NewController(dbi models.IUserModel, loginService service.LoginService, jwtService service.JWTService) ILoginController {
 	return &LoginController{
-		Db: dbi,
-	}
-}
-
-func LoginHandler(loginService service.LoginService, jwtService service.JWTService) LoginController {
-	return LoginController{
+		Db:           dbi,
 		loginService: loginService,
 		jwtService:   jwtService,
 	}

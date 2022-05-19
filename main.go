@@ -5,13 +5,16 @@ import (
 	"user_auth/controller"
 	"user_auth/db"
 	"user_auth/middleware"
+	"user_auth/service"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	var loginService = service.StaticLoginService()
+	var jwtService = service.JWTAuthService()
 	db := db.NewDB()
-	e := controller.NewController(db)
+	e := controller.NewController(db, loginService, jwtService)
 
 	server := gin.Default()
 	server.POST("/signup", e.Signup)
