@@ -11,9 +11,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type LoginController interface {
-	Login(ctx *gin.Context) string
-	EmployeeList(ctx *gin.Context) string
+type ILoginController interface {
+	Login(ctx *gin.Context)
+	EmployeeList(ctx *gin.Context)
 	Signup(ctx *gin.Context)
 }
 
@@ -23,33 +23,35 @@ type Employee struct {
 	City string `form:"city" json:"city"`
 }
 
-type loginController struct {
+type LoginController struct {
 	loginService service.LoginService
 	jwtService   service.JWTService
+	Db           models.IUserModel
 }
 
-func LoginHandler(loginService service.LoginService, jwtService service.JWTService) LoginController {
-	return &loginController{
+func NewController(dbi models.IUserModel, loginService service.LoginService, jwtService service.JWTService) ILoginController {
+	return &LoginController{
+		Db:           dbi,
 		loginService: loginService,
 		jwtService:   jwtService,
 	}
 }
 
-func (controller *loginController) Login(ctx *gin.Context) string {
+func (c *LoginController) Login(ctx *gin.Context) {
 	var credential Credentials.LoginCredentials
 
 	if ctx.BindJSON(&credential) != nil {
 		ctx.JSON(406, gin.H{"message": "Provide required details"})
 		ctx.Abort()
-		return ""
+		return
 	}
 
-	result, err := userModel.GetUserByEmail(credential.Email)
+	result, err := c.Db.GetUserByEmail(credential.Email)
 
 	if result.Email == "" {
 		ctx.JSON(404, gin.H{"message": "User account was not found"})
 		ctx.Abort()
-		return ""
+		return
 	}
 
 	fmt.Println(result)
@@ -57,7 +59,7 @@ func (controller *loginController) Login(ctx *gin.Context) string {
 	if err != nil {
 		ctx.JSON(400, gin.H{"message": "Problem logging into your account"})
 		ctx.Abort()
-		return ""
+		return
 	}
 	hashedPassword := []byte(result.Password)
 	// Get the password provided in the request.body
@@ -68,17 +70,16 @@ func (controller *loginController) Login(ctx *gin.Context) string {
 	if err != nil {
 		ctx.JSON(403, gin.H{"message": "Invalid user credentials"})
 		ctx.Abort()
-		return ""
+		return
 	}
-
-	return controller.jwtService.GenerateToken(credential.Email, true)
+	ctx.JSON(200, c.jwtService.GenerateToken(credential.Email, true))
 
 }
 
-func (controller *loginController) EmployeeList(ctx *gin.Context) string {
+func (c *LoginController) EmployeeList(ctx *gin.Context) {
 
 	loggeduser, exist := ctx.Get("email")
-	user, err := userModel.GetUserByEmail(fmt.Sprint(loggeduser))
+	user, err := c.Db.GetUserByEmail(fmt.Sprint(loggeduser))
 	if err != nil {
 		log.Print("cant fetch user from db")
 	}
@@ -95,40 +96,38 @@ func (controller *loginController) EmployeeList(ctx *gin.Context) string {
 	ctx.JSON(200, usercredential)
 
 	log.Printf("You are logged in as %s, Hope API is working Fine", user.Name)
-	return ""
 }
-
-var userModel = new(models.UserModel)
 
 type UserController struct{}
 
-func (controller *loginController) Signup(c *gin.Context) {
+func (c *LoginController) Signup(ctx *gin.Context) {
 	var usercredential Credentials.SignUpCredentials
 
-	if c.BindJSON(&usercredential) != nil {
+	if ctx.BindJSON(&usercredential) != nil {
 		// specified response
-		c.JSON(406, gin.H{"message": "Provide relevant fields"})
+		ctx.JSON(406, gin.H{"message": "Provide relevant fields"})
 		// abort the request
-		c.Abort()
+		ctx.Abort()
 		// return nothing
 		return
 	}
 
-	result, _ := userModel.GetUserByEmail(usercredential.Email)
+	result, _ := c.Db.GetUserByEmail(usercredential.Email)
 
 	if result.Email != "" {
-		c.JSON(403, gin.H{"message": "Email is already in use"})
-		c.Abort()
+		ctx.JSON(403, gin.H{"message": "Email is already in use"})
+		ctx.Abort()
 		return
 	}
 
-	err := userModel.Signup(usercredential)
+	err := c.Db.Signup(usercredential)
 
 	if err != nil {
-		c.JSON(400, gin.H{"message": "Problem creating an account"})
-		c.Abort()
+		ctx.JSON(400, gin.H{"message": "Problem creating an account"})
+		log.Println("Problem creating an account", err.Error())
+		ctx.Abort()
 		return
 	}
 
-	c.JSON(201, gin.H{"message": "New user account registered"})
+	ctx.JSON(201, gin.H{"message": "New user account registered"})
 }
