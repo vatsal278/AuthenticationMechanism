@@ -1,0 +1,9 @@
+This Rest API was created using Golang and mongodb. It features functions like sign up login and getting user details from database.
+This api has used authentication mechanism, middle ware and different clean code principles.
+In order to use this Api:
+1. clone the repo : $ git clone https://github.com/vatsal278/Go-Api-with-Authentication-Mechanism.git
+2. build the docker file : $ docker build .
+3. Pull official mongodb image from docker hub : $ docker pull mongo
+4. Start a mongo server instance : $ docker run --name mongo-container-name -d mongo
+5. run the container using command : $ docker run --network api_net(network name where your db is connected) --publish 9092(any available port):8080 image_name(use your own image name)
+
