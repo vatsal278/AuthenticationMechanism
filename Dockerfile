@@ -37,5 +37,7 @@ EXPOSE 8080
 # Copy the Pre-built binary file
 COPY --from=builder /main .
 
+ENV DBNAME=users
+ENV DBADDRESS=172.18.0.2:27017
 # Run executable
 CMD ["/main"]
