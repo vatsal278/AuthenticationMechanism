@@ -5,6 +5,6 @@ In order to use this Api:
 2. build the docker file : $ docker build .
 3. Pull official mongodb image from docker hub : $ docker pull mongo
 4. Create a new isolated docker network : $ docker network create -d bridge api_net
-5. Start a mongo server instance : $ docker run --network api_net --name mongo-container-name -d mongo
-6. run the container using command : $ docker run --network api_net --publish 9092(any available port):8080 image_name(use your own image name)
+5. Start a mongo container instance : $ docker run --network api_net --name mongo-container --publish 9091:27017 -d mongo
+6. run the container using command : $ docker run --network api_net --publish 9092:8080 image_name
 
