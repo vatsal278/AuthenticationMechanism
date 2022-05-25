@@ -26,5 +26,5 @@ func main() {
 	server.Use(middleware.AuthorizeJWT())
 	server.GET("/get", e.EmployeeList)
 
-	log.Fatal(server.Run(":8080"))
+	log.Fatal(server.Run(":9090"))
 }

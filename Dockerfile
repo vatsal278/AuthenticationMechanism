@@ -32,12 +32,11 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /main .
 # Start a new stage from scratch
 FROM scratch
 
-EXPOSE 8080
+EXPOSE 9090
+
 
 # Copy the Pre-built binary file
 COPY --from=builder /main .
 
-ENV DBNAME=users
-ENV DBADDRESS=172.18.0.2:27017
 # Run executable
 CMD ["/main"]
